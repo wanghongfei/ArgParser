@@ -38,19 +38,23 @@ class ArgParser:
 
             if arg.startswith("-"):
                 example = self.Token(arg)
-                pos = self.tokens.index(example)
-                # 判断参数是否是必须的
-                if self.tokens[pos].required:
-                    # 读取下一个参数
-                    if ix == LEN - 1:
-                        # 已经是最后一个参数了
-                        raise ArgParserException('argument %s lacks of value' % arg)
-                    next_arg = self.args[ix + 1]
-                    # 如果下一个参数也是以-开头
-                    # 说明这也不是参数值
-                    if next_arg.startswith('-'):
-                        raise ArgParserException('argument %s lacks of value' % arg)
-                    result.append( (arg, next_arg) )
+                if example in self.tokens:
+
+                    pos = self.tokens.index(example)
+                    # 判断参数是否是必须的
+                    if self.tokens[pos].required:
+                        # 读取下一个参数
+                        if ix == LEN - 1:
+                            # 已经是最后一个参数了
+                            raise ArgParserException('argument %s lacks of value' % arg)
+                        next_arg = self.args[ix + 1]
+                        # 如果下一个参数在tokens[]中
+                        # 说明这也不是参数值
+                        example = self.Token(next_arg)
+                        if example in self.tokens:
+                            raise ArgParserException('argument %s lacks of value' % arg)
+
+                        result.append( (arg, next_arg) )
 
         return result
 
@@ -65,6 +69,9 @@ class ArgParser:
 
         def __eq__(self, other):
             return self.name == other.name
+
+        def __str__(self):
+            return "opt=%s, required=%s" % (self.name,self.required)
 
 if __name__ == '__main__':
     parser = ArgParser(sys.argv[1:], "p:t:")
