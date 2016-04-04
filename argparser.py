@@ -55,6 +55,8 @@ class ArgParser:
                             raise ArgParserException('argument %s lacks of value' % arg)
 
                         result.append( (arg, next_arg) )
+                    else:
+                        result.append( (arg, "") )
 
         return result
 
